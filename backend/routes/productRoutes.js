@@ -11,10 +11,10 @@ const{
 const router= express.Router();
 
 router.get("/",getProducts);
-router.get("/",getProduct);
+router.get("/:id",getProduct);
 router.post("/",createProduct);
-router.put("/",updateProduct);
-router.delete("/",deleteProduct);
+router.put("/:id",updateProduct);
+router.delete("/:id",deleteProduct);
 
 
 module.exports = router;

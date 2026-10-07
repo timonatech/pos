@@ -1,42 +1,40 @@
-const product = require("../models/product");
+const Product = require("../models/product");
 
-// geta all products
-
+// GET all products
 const getProducts = async (req, res) => {
     try {
-        const products = await product.find();
+        const products = await Product.find();
 
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({
-            message: "failed to fetch products",
-            error : error.message
+            message: "Failed to fetch products",
+            error: error.message
         });
     }
 };
 
-//get product
-
+// GET one product
 const getProduct = async (req, res) => {
-    try{
-        const product = await product.findById(req.params.id);
+    try {
+        const foundProduct = await Product.findById(req.params.id);
 
-        if (!product) {
+        if (!foundProduct) {
             return res.status(404).json({
-                message:"product not found"
+                message: "Product not found"
             });
         }
 
-        res.status(200).json(product);
+        res.status(200).json(foundProduct);
     } catch (error) {
         res.status(500).json({
-            message: "failed to fetch product",
-            error : error.message
+            message: "Failed to fetch product",
+            error: error.message
         });
     }
 };
 
-// create product
+// CREATE product
 const createProduct = async (req, res) => {
     try {
         const {
@@ -47,16 +45,15 @@ const createProduct = async (req, res) => {
             costPrice,
             quantity,
             lowStockThreshold
-        }= req.body;
+        } = req.body;
 
-        if (!name || !category || price === undefined || costPrice === undefined || quantity === undefined || lowStockThreshold === undefined) {
+        if (!name || !category || price === undefined || costPrice === undefined) {
             return res.status(400).json({
-                message :"name, category, price, costPrice, quantity and lowStockThreshold are required fields"
-
+                message: "Name, category, price and cost price are required"
             });
         }
 
-        const product = await product.create({
+        const newProduct = await Product.create({
             name,
             barcode,
             category,
@@ -67,22 +64,23 @@ const createProduct = async (req, res) => {
         });
 
         res.status(201).json({
-            message :"product created succesfully",
-            product
+            message: "Product created successfully",
+            product: newProduct
         });
-    }catch (error) {
+    } catch (error) {
+        console.error("Error creating product:", error);
+
         res.status(500).json({
-            message:"failed to creatre product",
-            error:error.message
+            message: "Failed to create product",
+            error: error.message
         });
     }
 };
 
-//update product
-
+// UPDATE product
 const updateProduct = async (req, res) => {
     try {
-        const product = await product.findByIdAndUpdate(
+        const updatedProduct = await Product.findByIdAndUpdate(
             req.params.id,
             req.body,
             {
@@ -91,54 +89,52 @@ const updateProduct = async (req, res) => {
             }
         );
 
-        if (!product){
+        if (!updatedProduct) {
             return res.status(404).json({
-                message:"product not found"
+                message: "Product not found"
             });
         }
-    
-
-    res.status(200).json({
-        message :"product updated succesfully",
-        product
-
-    });
-    }catch(error) {
-    res.status(500).json({
-        message: "failed to update product",
-        error: error.message
-    });
-    }
-};
-
-//delete product
-
-const deleteProduct = async (req, res) => {
-    try{
-        const product = await product.findByIdAndDelete(req.params.id);
-
-        if (!product)   {
-            return res.status(404).json({
-                message:"product not found"
-            });
-        } 
 
         res.status(200).json({
-            message:"product deleted succesfully"
+            message: "Product updated successfully",
+            product: updatedProduct
         });
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
-            message :"failed to delete product",
-            error : error.message
-        })
+            message: "Failed to update product",
+            error: error.message
+        });
     }
 };
-module.exports ={
+
+// DELETE product
+const deleteProduct = async (req, res) => {
+    try {
+        const deletedProduct = await Product.findByIdAndDelete(
+            req.params.id
+        );
+
+        if (!deletedProduct) {
+            return res.status(404).json({
+                message: "Product not found"
+            });
+        }
+
+        res.status(200).json({
+            message: "Product deleted successfully"
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to delete product",
+            error: error.message
+        });
+    }
+};
+
+module.exports = {
     getProducts,
     getProduct,
     createProduct,
     updateProduct,
     deleteProduct
 };
-
-
